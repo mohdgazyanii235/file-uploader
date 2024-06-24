@@ -1,0 +1,74 @@
+#!/usr/bin/python3.7
+
+import http.server
+import socketserver
+import os
+from http import HTTPStatus
+import cgi
+import argparse
+
+class HTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/':
+            self.send_response(HTTPStatus.OK)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(b'''
+                <html>
+                <head><title>Upload File</title></head>
+                <body>
+                    <form enctype="multipart/form-data" method="post">
+                        <input type="file" name="file" />
+                        <input type="submit" value="Upload" />
+                    </form>
+                </body>
+                </html>
+            ''')
+        else:
+            super().do_GET()
+
+    def do_POST(self):
+        form = cgi.FieldStorage(
+            fp=self.rfile, 
+            headers=self.headers,
+            environ={'REQUEST_METHOD':'POST',
+                     'CONTENT_TYPE':self.headers['Content-Type'],
+                     })
+
+        if 'file' in form:
+            file_item = form['file']
+            if file_item.filename:
+                filename = os.path.basename(file_item.filename)
+                file_path = os.path.join(self.server.directory, filename)
+                with open(file_path, 'wb') as f:
+                    f.write(file_item.file.read())
+
+                self.send_response(HTTPStatus.CREATED)
+                self.end_headers()
+                self.wfile.write(f"File '{filename}' uploaded successfully to {self.server.directory}".encode())
+            else:
+                self.send_response(HTTPStatus.BAD_REQUEST)
+                self.end_headers()
+                self.wfile.write(b"Failed to upload file: No file was uploaded.")
+        else:
+            self.send_response(HTTPStatus.BAD_REQUEST)
+            self.end_headers()
+            self.wfile.write(b"Failed to upload file: 'file' field not found.")
+
+def run(server_class=socketserver.TCPServer, handler_class=HTTPRequestHandler, directory='/tmp/file_uploads', port=8000):
+    server_address = ('', port)
+    httpd = server_class(server_address, handler_class)
+    httpd.directory = directory
+    print(f"Starting httpd server on port {port}...\nFiles will be uploaded to {directory}")
+    httpd.serve_forever()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="HTTP Server for file uploads")
+    parser.add_argument('-d', dest='directory', default='/tmp/file_uploads', help='Directory to store uploaded files')
+    parser.add_argument('-p', dest='port', default=8000, help='Port to run the server on')
+    args = parser.parse_args()
+
+    if not os.path.exists(args.directory):
+        os.makedirs(args.directory)
+
+    run(directory=args.directory, port=int(args.port))
