@@ -42,7 +42,7 @@ chmod +x file-uploader
 ./file-uploader.py -d /desired/upload/path -p 8000
 ```
 ## Usage
-- Open a web browser and navigate to 'http://localhost:<port>'
+- Open a web browser and navigate to http://localhost:8000
 - Use the upload form to select and upload files to the specific directory
 
 
