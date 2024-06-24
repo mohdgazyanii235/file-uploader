@@ -16,7 +16,7 @@ To use this utility, simply execute the script with the desired directory and po
 
 ```bash
 ./file-uploader -d <location to download files to> -p <port of the HTTP server>
-
+```
 ### Example Usage
 
 If you want to upload files to '/home/username/uploads' and the server to run on port 8000, you would run:
