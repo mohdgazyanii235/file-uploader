@@ -22,7 +22,7 @@ To use this utility, simply execute the script with the desired directory and po
 If you want to upload files to '/home/username/uploads' and the server to run on port 8000, you would run:
 ```bash
 ./file-uploader -d /home/username/uploads -p 8000
-
+```
 ## Prerequisites
 
 Ensure that you have Python installed on you machine, as this script is built with Python 3.7
@@ -32,15 +32,15 @@ Ensure that you have Python installed on you machine, as this script is built wi
 ```bash
 git clone https://github.com/mohdgazyani235/file-uploader.git
 cd file-uploader
-
+```
 #### Make the script executable
 ```bash
 chmod +x file-uploader
-
+```
 #### Run the script
 ```bash
 ./file-uploader.py -d /desired/upload/path -p 8000
-
+```
 ## Usage
 - Open a web browser and navigate to 'http://localhost:<port>'
 - Use the upload form to select and upload files to the specific directory
